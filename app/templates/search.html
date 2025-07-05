@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">🔍 Search Results</h1>
+        {% if query %}
+        <p class="text-xl text-gray-600">Results for: "<strong>{{ query }}</strong>"</p>
+        {% else %}
+        <p class="text-xl text-gray-600">Enter a search term to find deals</p>
+        {% endif %}
+    </div>
+
+    <!-- Search Form -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <form method="get" class="flex items-center space-x-4">
+            <div class="flex-1">
+                <input type="text" name="q" value="{{ query or '' }}" placeholder="Search for deals..." 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <button type="submit" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition">
+                <i class="fas fa-search mr-2"></i>Search
+            </button>
+        </form>
+    </div>
+
+    {% if query and deals %}
+    <!-- Results -->
+    <div class="mb-6">
+        <p class="text-gray-600">Found {{ deals|length }} deal(s)</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for deal in deals %}
+        <div class="deal-card bg-white rounded-xl shadow-md overflow-hidden">
+            {% if deal.image_url %}
+            <div class="relative">
+                <img src="{{ deal.image_url }}" alt="{{ deal.title }}" class="w-full h-48 object-cover">
+                {% if deal.discount_percentage > 0 %}
+                <div class="absolute top-2 right-2 discount-badge text-white px-3 py-1 rounded-full text-sm font-bold">
+                    {{ "%.0f"|format(deal.discount_percentage) }}% OFF
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div class="p-4">
+                <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 h-12">{{ deal.title }}</h3>
+                
+                {% if deal.category %}
+                <div class="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full inline-block mb-3">
+                    {{ deal.category.replace('-', ' ').title() }}
+                </div>
+                {% endif %}
+                
+                <div class="flex items-center justify-between mb-3">
+                    <div class="text-2xl font-bold text-green-600">
+                        ${{ "%.2f"|format(deal.current_price) }}
+                    </div>
+                    {% if deal.original_price and deal.original_price != deal.current_price %}
+                    <div class="text-sm text-gray-500 line-through">
+                        ${{ "%.2f"|format(deal.original_price) }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if deal.rating %}
+                <div class="flex items-center mb-3">
+                    <div class="text-yellow-400">
+                        {% for i in range(5) %}
+                            {% if i < deal.rating %}⭐{% else %}☆{% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="text-sm text-gray-600 ml-2">{{ "%.1f"|format(deal.rating) }}/5</span>
+                </div>
+                {% endif %}
+                
+                <a href="{{ deal.affiliate_url }}" target="_blank" 
+                   class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition inline-block text-center">
+                    Get Deal
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% elif query and not deals %}
+    <!-- No Results -->
+    <div class="text-center py-16">
+        <div class="text-6xl mb-4">🔍</div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">No deals found</h2>
+        <p class="text-gray-600 mb-6">We couldn't find any deals matching "<strong>{{ query }}</strong>"</p>
+        <div class="space-y-4">
+            <p class="text-gray-600">Try:</p>
+            <ul class="text-gray-600 space-y-2">
+                <li>• Using different keywords</li>
+                <li>• Checking your spelling</li>
+                <li>• Using more general terms</li>
+                <li>• Browsing our categories</li>
+            </ul>
+        </div>
+        <div class="mt-8">
+            <a href="/deals" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition">
+                Browse All Deals
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Search Suggestions -->
+    <div class="text-center py-16">
+        <div class="text-6xl mb-4">🔍</div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Search for Amazing Deals</h2>
+        <p class="text-gray-600 mb-8">Enter a product name, brand, or category to find the best deals</p>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+            <a href="/search?q=headphones" class="bg-purple-100 text-purple-800 px-4 py-2 rounded-lg hover:bg-purple-200 transition">
+                Headphones
+            </a>
+            <a href="/search?q=laptop" class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg hover:bg-blue-200 transition">
+                Laptops
+            </a>
+            <a href="/search?q=kitchen" class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition">
+                Kitchen
+            </a>
+            <a href="/search?q=fashion" class="bg-orange-100 text-orange-800 px-4 py-2 rounded-lg hover:bg-orange-200 transition">
+                Fashion
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

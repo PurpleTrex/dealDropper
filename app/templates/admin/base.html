@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard - DealDropper{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Admin Navigation -->
+    <nav class="bg-gray-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/admin" class="text-white text-xl font-bold">
+                        <i class="fas fa-tachometer-alt mr-2"></i>DealDropper Admin
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-300 hover:text-white transition">
+                        <i class="fas fa-home mr-1"></i>Frontend
+                    </a>
+                    <a href="/api/docs" class="text-gray-300 hover:text-white transition">
+                        <i class="fas fa-book mr-1"></i>API Docs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-lg h-screen sticky top-0">
+            <nav class="mt-8">
+                <div class="px-4 space-y-2">
+                    <a href="/admin" class="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-lg">
+                        <i class="fas fa-chart-pie mr-3"></i>Dashboard
+                    </a>
+                    <a href="/admin/products" class="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-box mr-3"></i>Products
+                    </a>
+                    <a href="/admin/deals" class="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-tags mr-3"></i>Deals
+                    </a>
+                    <a href="/admin/users" class="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-users mr-3"></i>Users
+                    </a>
+                    <a href="/admin/analytics" class="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-chart-line mr-3"></i>Analytics
+                    </a>
+                    <a href="/admin/settings" class="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-cog mr-3"></i>Settings
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+# Core dependencies
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+sqlalchemy==2.0.23
+alembic==1.13.0
+asyncpg==0.29.0
+redis==5.0.1
+python-multipart==0.0.6
+jinja2==3.1.2
+aiofiles==23.2.1
+
+# Web scraping
+beautifulsoup4==4.12.2
+requests==2.31.0
+selenium==4.15.2
+fake-useragent==1.4.0
+undetected-chromedriver==3.5.4
+
+# Task scheduling
+apscheduler==3.10.4
+
+# Social media bots
+python-telegram-bot==20.7
+discord.py==2.3.2
+tweepy==4.14.0
+
+# Email
+sendgrid==6.10.0
+emails==0.6
+
+# Link management
+pyshorteners==1.0.1
+
+# Utilities
+python-dotenv==1.0.0
+httpx==0.25.2
+jinja2==3.1.2
+aiofiles==23.2.1
+pillow==10.1.0
+pandas==2.1.4
+
+# Development
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+flake8==6.1.0
+
+# Monitoring
+structlog==23.2.0
+prometheus-client==0.19.0

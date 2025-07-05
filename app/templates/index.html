@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="gradient-bg text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-5xl font-bold mb-6">🔥 Hottest Amazon Deals</h1>
+        <p class="text-xl mb-8">Discover amazing discounts and trending products updated every 15 minutes</p>
+        <div class="flex justify-center space-x-4">
+            <a href="/deals" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                Browse All Deals
+            </a>
+            <a href="/subscribe" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition">
+                Get Alerts
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Deal Stats -->
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+            <div class="p-6">
+                <div class="text-3xl font-bold text-purple-600 mb-2">{{ deals|length }}</div>
+                <div class="text-gray-600">Active Deals</div>
+            </div>
+            <div class="p-6">
+                <div class="text-3xl font-bold text-green-600 mb-2">
+                    {% if deals %}{{ "%.0f"|format(deals|map(attribute='discount_percentage')|avg) }}%{% else %}0%{% endif %}
+                </div>
+                <div class="text-gray-600">Avg Discount</div>
+            </div>
+            <div class="p-6">
+                <div class="text-3xl font-bold text-blue-600 mb-2">15min</div>
+                <div class="text-gray-600">Update Frequency</div>
+            </div>
+            <div class="p-6">
+                <div class="text-3xl font-bold text-orange-600 mb-2">24/7</div>
+                <div class="text-gray-600">Monitoring</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Deals -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">🔥 Latest Hot Deals</h2>
+            <p class="text-xl text-gray-600">Updated every 15 minutes with the best discounts</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for deal in deals[:12] %}
+            <div class="deal-card bg-white rounded-xl shadow-md overflow-hidden">
+                {% if deal.image_url %}
+                <div class="relative">
+                    <img src="{{ deal.image_url }}" alt="{{ deal.title }}" class="w-full h-48 object-cover">
+                    {% if deal.discount_percentage > 0 %}
+                    <div class="absolute top-2 right-2 discount-badge text-white px-3 py-1 rounded-full text-sm font-bold">
+                        {{ "%.0f"|format(deal.discount_percentage) }}% OFF
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 h-12">{{ deal.title }}</h3>
+                    
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="text-2xl font-bold text-green-600">
+                            ${{ "%.2f"|format(deal.current_price) }}
+                        </div>
+                        {% if deal.original_price and deal.original_price != deal.current_price %}
+                        <div class="text-sm text-gray-500 line-through">
+                            ${{ "%.2f"|format(deal.original_price) }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if deal.rating %}
+                    <div class="flex items-center mb-3">
+                        <div class="text-yellow-400">
+                            {% for i in range(5) %}
+                                {% if i < deal.rating %}⭐{% else %}☆{% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-sm text-gray-600 ml-2">{{ "%.1f"|format(deal.rating) }}/5</span>
+                    </div>
+                    {% endif %}
+                    
+                    <a href="{{ deal.affiliate_url }}" target="_blank" 
+                       class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition inline-block text-center">
+                        Get Deal
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-12">
+            <a href="/deals" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition">
+                View All Deals
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Trending Products -->
+{% if trending %}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">📈 Trending Products</h2>
+            <p class="text-xl text-gray-600">Popular items with high ratings</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {% for product in trending[:10] %}
+            <div class="deal-card bg-white rounded-xl shadow-md overflow-hidden">
+                {% if product.image_url %}
+                <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-40 object-cover">
+                {% endif %}
+                
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-2 text-sm line-clamp-2 h-10">{{ product.title }}</h3>
+                    
+                    <div class="text-lg font-bold text-gray-900 mb-2">
+                        ${{ "%.2f"|format(product.current_price) }}
+                    </div>
+                    
+                    {% if product.rating %}
+                    <div class="flex items-center mb-3">
+                        <div class="text-yellow-400 text-sm">
+                            {% for i in range(5) %}
+                                {% if i < product.rating %}⭐{% else %}☆{% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-xs text-gray-600 ml-1">{{ "%.1f"|format(product.rating) }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <a href="{{ product.affiliate_url }}" target="_blank" 
+                       class="w-full bg-gray-800 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:bg-gray-900 transition inline-block text-center">
+                        View Product
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Newsletter Signup -->
+<section class="py-16 gradient-bg">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold text-white mb-4">Never Miss a Deal</h2>
+        <p class="text-xl text-gray-200 mb-8">Get the best deals delivered to your inbox, Telegram, Discord, and Twitter</p>
+        
+        <div class="bg-white rounded-lg p-8 max-w-md mx-auto">
+            <form action="/subscribe" method="post" class="space-y-4">
+                <input type="email" name="email" placeholder="Enter your email" required
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition">
+                    Subscribe for Free
+                </button>
+            </form>
+            <p class="text-sm text-gray-600 mt-4">Free to subscribe. Unsubscribe anytime.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

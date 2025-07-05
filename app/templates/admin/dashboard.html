@@ -1,0 +1,173 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+    <p class="text-gray-600 mt-2">Monitor your DealDropper performance and metrics</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-2 bg-blue-100 rounded-lg">
+                <i class="fas fa-box text-blue-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Total Products</p>
+                <p class="text-2xl font-bold text-gray-900">{{ stats.total_products or 0 }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-2 bg-green-100 rounded-lg">
+                <i class="fas fa-tags text-green-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Total Deals</p>
+                <p class="text-2xl font-bold text-gray-900">{{ stats.total_deals or 0 }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-2 bg-purple-100 rounded-lg">
+                <i class="fas fa-users text-purple-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Total Users</p>
+                <p class="text-2xl font-bold text-gray-900">{{ stats.total_users or 0 }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-2 bg-orange-100 rounded-lg">
+                <i class="fas fa-fire text-orange-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Deals Today</p>
+                <p class="text-2xl font-bold text-gray-900">{{ stats.deals_today or 0 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Channel Performance -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Channel Performance</h3>
+        <canvas id="channelChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Category Distribution -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Category Distribution</h3>
+        <canvas id="categoryChart" width="400" height="200"></canvas>
+    </div>
+</div>
+
+<!-- Top Deals Table -->
+<div class="bg-white rounded-lg shadow mb-8">
+    <div class="p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Top Performing Deals (Last 7 Days)</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for deal in stats.top_deals[:10] %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ deal.title[:60] }}...</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                            {{ "%.0f"|format(deal.discount) }}% OFF
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${{ "%.2f"|format(deal.price) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{{ deal.url }}" target="_blank" class="text-indigo-600 hover:text-indigo-900">View Deal</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">System Status</h3>
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Scraping Service</span>
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                    <i class="fas fa-circle mr-1"></i>Active
+                </span>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Distribution Service</span>
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                    <i class="fas fa-circle mr-1"></i>Active
+                </span>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Telegram Bot</span>
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                    <i class="fas fa-circle mr-1"></i>Connected
+                </span>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Discord Bot</span>
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                    <i class="fas fa-circle mr-1"></i>Connected
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        <div class="space-y-3">
+            <button data-action="force-scrape" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                <i class="fas fa-sync-alt mr-2"></i>Force Scrape Now
+            </button>
+            <button data-action="test-notification" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                <i class="fas fa-paper-plane mr-2"></i>Send Test Notification
+            </button>
+            <button data-action="send-newsletter" class="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+                <i class="fas fa-envelope mr-2"></i>Send Newsletter
+            </button>
+            <button data-action="export-data" class="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                <i class="fas fa-download mr-2"></i>Export Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data container for JavaScript -->
+<div id="chart-data" 
+     data-channels='{{ stats.channels|tojson if stats.channels else "{}" }}'
+     data-categories='{{ stats.categories|tojson if stats.categories else "[]" }}'
+     style="display: none;"></div>
+
+<!-- External JavaScript -->
+<script src="/static/js/admin-dashboard.js"></script>
+{% endblock %}

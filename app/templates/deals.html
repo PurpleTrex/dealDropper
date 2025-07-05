@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">🔥 All Deals</h1>
+        <p class="text-xl text-gray-600">Browse all available deals and discounts</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <form method="get" class="flex flex-wrap items-center gap-4">
+            <div class="flex-1 min-w-64">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <select name="category" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat }}" {% if current_category == cat %}selected{% endif %}>
+                        {{ cat.replace('-', ' ').title() }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mt-6">
+                <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+                    Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Deals Grid -->
+    {% if deals %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for deal in deals %}
+        <div class="deal-card bg-white rounded-xl shadow-md overflow-hidden">
+            {% if deal.image_url %}
+            <div class="relative">
+                <img src="{{ deal.image_url }}" alt="{{ deal.title }}" class="w-full h-48 object-cover">
+                {% if deal.discount_percentage > 0 %}
+                <div class="absolute top-2 right-2 discount-badge text-white px-3 py-1 rounded-full text-sm font-bold">
+                    {{ "%.0f"|format(deal.discount_percentage) }}% OFF
+                </div>
+                {% endif %}
+                {% if deal.is_lightning_deal %}
+                <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                    ⚡ Lightning Deal
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div class="p-4">
+                <div class="flex items-start justify-between mb-2">
+                    <h3 class="font-semibold text-gray-900 line-clamp-3 h-16 text-sm">{{ deal.title }}</h3>
+                </div>
+                
+                {% if deal.category %}
+                <div class="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full inline-block mb-3">
+                    {{ deal.category.replace('-', ' ').title() }}
+                </div>
+                {% endif %}
+                
+                <div class="flex items-center justify-between mb-3">
+                    <div class="text-2xl font-bold text-green-600">
+                        ${{ "%.2f"|format(deal.current_price) }}
+                    </div>
+                    {% if deal.original_price and deal.original_price != deal.current_price %}
+                    <div class="text-sm text-gray-500 line-through">
+                        ${{ "%.2f"|format(deal.original_price) }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if deal.rating %}
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center">
+                        <div class="text-yellow-400">
+                            {% for i in range(5) %}
+                                {% if i < deal.rating %}⭐{% else %}☆{% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-sm text-gray-600 ml-2">{{ "%.1f"|format(deal.rating) }}/5</span>
+                    </div>
+                    {% if deal.review_count %}
+                    <span class="text-xs text-gray-500">({{ deal.review_count }} reviews)</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <div class="flex space-x-2">
+                    <a href="{{ deal.affiliate_url }}" target="_blank" 
+                       class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition text-center text-sm">
+                        Get Deal
+                    </a>
+                    <button onclick="shareDeal('{{ deal.title }}', '{{ deal.affiliate_url }}')" 
+                            class="bg-gray-200 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-300 transition">
+                        <i class="fas fa-share"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center mt-12">
+        <div class="flex space-x-2">
+            {% if page > 1 %}
+            <a href="?page={{ page - 1 }}{% if current_category %}&category={{ current_category }}{% endif %}" 
+               class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                Previous
+            </a>
+            {% endif %}
+            
+            <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">
+                Page {{ page }}
+            </span>
+            
+            {% if deals|length == 24 %}
+            <a href="?page={{ page + 1 }}{% if current_category %}&category={{ current_category }}{% endif %}" 
+               class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                Next
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <!-- No Deals Found -->
+    <div class="text-center py-16">
+        <div class="text-6xl mb-4">🔍</div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">No deals found</h2>
+        <p class="text-gray-600 mb-6">Try adjusting your filters or check back later for new deals.</p>
+        <a href="/deals" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition">
+            View All Deals
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function shareDeals(title, url) {
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            url: url
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Deal link copied to clipboard!');
+        });
+    }
+}
+</script>
+{% endblock %}
